@@ -14,7 +14,6 @@ jobs:
       - TASK:
         - script: |
             test -f /build/IN/meta-zephyr-sdk_runCI/runCI/sdk.env && . /build/IN/meta-zephyr-sdk_runCI/runCI/sdk.env;
-            env;
             cat /build/IN/meta-zephyr-sdk_runCI/runCI/sdk.env;
             if [ -n "${GIT_TAG_NAME}" ]; then
               export S3_PATH="s3://incoming.zephyrproject.org/sdk/${METAZEPHYRSDK_CIREPO_VERSIONNUMBER}";
@@ -50,7 +49,8 @@ jobs:
                 echo "Uploading asset ${filename}... "
 
                 # Construct url
-                GH_ASSET="https://uploads.github.com/repos/$OWNER/$REPO/releases/$id/assets?name=$(basename $filename)"
+                GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/meta-zephyr-sdk/releases/$id/assets?name=$(basename $filename)"
+                echo ${GH_ASSET}
 
                 curl "$GITHUB_OAUTH_BASIC" --data-binary @"$filename" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" $GH_ASSET
               fi
