@@ -12,6 +12,7 @@ jobs:
       - IN: meta-zephyr-sdk_runCI
       - TASK:
         - script: |
+            env;
             test -f /build/IN/meta-zephyr-sdk_runCI/runCI/sdk.env && . /build/IN/meta-zephyr-sdk_runCI/runCI/sdk.env;
             if [ "${IS_GIT_TAG}" = "true" ]; then
               export S3_PATH="s3://incoming.zephyrproject.org/sdk/${METAZEPHYRSDK_CIREPO_VERSIONNUMBER}";
