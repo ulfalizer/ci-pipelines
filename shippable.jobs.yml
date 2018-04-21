@@ -10,6 +10,7 @@ jobs:
       - IN: s3-token-simple
       - IN: meta-zephyr-sdk_ciRepo
       - IN: meta-zephyr-sdk_runCI
+      - IN: gh-token
       - TASK:
         - script: |
             env;
@@ -23,6 +24,34 @@ jobs:
               cp toolchains/make_zephyr_sdk.sh toolchains/template_dir .;
               sh ./make_zephyr_sdk.sh;
               aws s3 cp zephyr-sdk* ${S3_PATH}/;
+              filename="zephyr-sdk-$GIT_TAG_NAME-setup.run"
+              if [ "${IS_PRERELEASE}" = "true" ]; then
+                # Define variables.
+                GH_API="https://api.github.com"
+                GH_REPO="$GH_API/repos/zephyrproject-rtos/meta-zephyr-sdk"
+                GH_TAGS="$GH_REPO/releases/tags/$GIT_TAG_NAME"
+                AUTH="Authorization: token $GH_TOKEN"
+                WGET_ARGS="--content-disposition --auth-no-challenge --no-cookie"
+                CURL_ARGS="-LJO#"
+
+                # Validate token.
+                curl -o /dev/null -sH "$AUTH" $GH_REPO || { echo "Error: Invalid repo, token or network issue!";  exit 1; }
+
+                # Read asset tags.
+                response=$(curl -sH "$AUTH" $GH_TAGS)
+
+                # Get ID of the asset based on given filename.
+                eval $(echo "$response" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=')
+                [ "$id" ] || { echo "Error: Failed to get release id for tag: $tag"; echo "$response" | awk 'length($0)<100' >&2; exit 1; }
+
+                # Upload asset
+                echo "Uploading asset... "
+
+                # Construct url
+                GH_ASSET="https://uploads.github.com/repos/$OWNER/$REPO/releases/$id/assets?name=$(basename $filename)"
+
+                curl "$GITHUB_OAUTH_BASIC" --data-binary @"$filename" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" $GH_ASSET
+              fi
             fi
 
   - name: ci-test_runCI
