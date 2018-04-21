@@ -13,8 +13,9 @@ jobs:
       - IN: github_token
       - TASK:
         - script: |
-            env;
             test -f /build/IN/meta-zephyr-sdk_runCI/runCI/sdk.env && . /build/IN/meta-zephyr-sdk_runCI/runCI/sdk.env;
+            env;
+            cat /build/IN/meta-zephyr-sdk_runCI/runCI/sdk.env;
             if [ "${IS_GIT_TAG}" = "true" ]; then
               export S3_PATH="s3://incoming.zephyrproject.org/sdk/${METAZEPHYRSDK_CIREPO_VERSIONNUMBER}";
               sudo apt-get install -y makeself p7zip-full cpio tree;
@@ -25,6 +26,7 @@ jobs:
               sh ./make_zephyr_sdk.sh;
               aws s3 cp zephyr-sdk* ${S3_PATH}/;
               filename="zephyr-sdk-$GIT_TAG_NAME-setup.run"
+              echo "SDK file name: ${filename}"
               if [ "${IS_PRERELEASE}" = "true" ]; then
                 # Define variables.
                 GH_API="https://api.github.com"
@@ -45,7 +47,7 @@ jobs:
                 [ "$id" ] || { echo "Error: Failed to get release id for tag: $tag"; echo "$response" | awk 'length($0)<100' >&2; exit 1; }
 
                 # Upload asset
-                echo "Uploading asset... "
+                echo "Uploading asset ${filename}... "
 
                 # Construct url
                 GH_ASSET="https://uploads.github.com/repos/$OWNER/$REPO/releases/$id/assets?name=$(basename $filename)"
