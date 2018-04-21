@@ -14,9 +14,9 @@ resources:
       type: integration
       integration: "aws_s3"
 
-    - name: gh-token
+    - name: github_token
       type: integration
-      integration: "gh_bot"
+      integration: "github_bot"
 
     - name: s3-token-simple
       type: integration

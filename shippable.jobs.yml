@@ -10,7 +10,7 @@ jobs:
       - IN: s3-token-simple
       - IN: meta-zephyr-sdk_ciRepo
       - IN: meta-zephyr-sdk_runCI
-      - IN: gh-token
+      - IN: github_token
       - TASK:
         - script: |
             env;
