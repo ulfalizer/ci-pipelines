@@ -26,7 +26,7 @@ jobs:
               aws s3 cp zephyr-sdk* ${S3_PATH}/;
               filename="zephyr-sdk-$GIT_TAG_NAME-setup.run"
               echo "SDK file name: ${filename}"
-              if [ "${IS_PRERELEASE}" = "true" ]; then
+              if [ "${IS_PRERELEASE}" = "true" -o "${IS_RELEASE}" = "true" ]; then
                 # Define variables.
                 GH_API="https://api.github.com"
                 GH_REPO="$GH_API/repos/zephyrproject-rtos/meta-zephyr-sdk"
