@@ -96,7 +96,7 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.4-rc2
+              imageTag: v0.4-rc7
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
