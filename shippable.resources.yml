@@ -42,11 +42,6 @@ resources:
       seed:
           interval: "53 1 * * *"
 
-    - name: daily-verify-issm
-      type: time
-      seed:
-          interval: "50 2 * * *"
-
     - name: ci_test_repo
       type: gitRepo
       integration: github
