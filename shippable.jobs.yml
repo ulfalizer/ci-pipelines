@@ -118,20 +118,3 @@ jobs:
               options: "--privileged=true --tty --net=bridge"
           script:
             - . /build/IN/ci_test_repo/gitRepo/scripts/build-docs.sh
-
-  - name: project-doc
-    type: runSh
-    steps:
-      - IN: s3-token
-      - IN: doc_repo
-        switch: off
-      - IN: docs_theme_repo
-        switch: off
-      - TASK:
-        - script: sudo apt-get install doxygen make
-        - script: sudo pip install breathe==4.6.0 sphinx==1.5.5  awscli sphinx_rtd_theme
-        - script: cd /build/IN/doc_repo/gitRepo/
-        - script: cp -a /build/IN/docs_theme_repo/gitRepo/ themes/zephyr-docs-theme
-        - script: make html
-        - script: aws s3 sync --quiet  _build/html s3://docs.zephyrproject.org/
-
