@@ -84,5 +84,5 @@ resources:
       pointer:
           sourceName: zephyrproject-rtos/zephyr-testing
           branch: master
-          buildOnPullRequest: false
+          buildOnPullRequest: true
           buildOnCommit: false

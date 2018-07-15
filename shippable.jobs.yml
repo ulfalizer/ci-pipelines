@@ -79,6 +79,23 @@ jobs:
       - IN: s3-token-simple
       - IN: codecov_testing
 
+  - name: zephyr-checks
+    type: runSh
+    steps:
+      - IN: testing_repo
+        switch: off
+      - TASK:
+          name: checks
+          runtime:
+            container: true
+            options:
+              imageName: zephyrprojectrtos/ci
+              imageTag: v0.4-rc7
+              pull: true
+              options: "--privileged=true --tty --net=bridge"
+          script:
+            - ls -la
+
   - name: zephyr-daily-doc
     type: runSh
     steps:
