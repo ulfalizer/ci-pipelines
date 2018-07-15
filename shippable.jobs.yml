@@ -83,7 +83,6 @@ jobs:
     type: runSh
     steps:
       - IN: testing_repo
-        switch: off
       - TASK:
           name: checks
           runtime:
@@ -94,6 +93,8 @@ jobs:
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
+            - ls -la IN/
+            - cd IN/testing_repo/gitRepo
             - ls -la
 
   - name: zephyr-daily-doc
