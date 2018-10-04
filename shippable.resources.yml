@@ -30,12 +30,7 @@ resources:
     - name: daily-verify
       type: time
       seed:
-          interval: "10 21 * * *"
-
-    - name: daily-verify-debug
-      type: time
-      seed:
-          interval: "13 4 * * *"
+          interval: "53 23 * * *"
 
     - name: daily-verify-arm
       type: time

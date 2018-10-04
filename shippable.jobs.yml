@@ -59,7 +59,6 @@ jobs:
   - name: ci-test_runCI
     type: runCI
     steps:
-      - IN: daily-verify-debug
       - IN: daily-verify
       - IN: daily-verify-arm
       - IN: ci-test_ciRepo
