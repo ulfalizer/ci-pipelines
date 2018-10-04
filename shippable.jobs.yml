@@ -4,6 +4,65 @@ jobs:
     steps:
       - IN: meta-zephyr-sdk_ciRepo
 
+  - name: create_sdk_ng
+    type: runSh
+    steps:
+      - IN: s3-token-simple
+      - IN: sdk-ng_ciRepo
+      - IN: sdk-ng_runCI
+      - IN: github_token
+      - TASK:
+        - script: |
+            test -f /build/IN/sdk-ng_runCI/runCI/sdk.env && . /build/IN/sdk-ng_runCI/runCI/sdk.env;
+            cat /build/IN/sdk-ng_runCI/runCI/sdk.env;
+            if [ -n "${GIT_TAG_NAME}" ]; then
+              export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNUMBER}";
+              sudo apt-get install -y makeself p7zip-full cpio tree;
+              sudo pip install awscli;
+              mkdir -p toolchains;
+              aws s3 sync ${S3_PATH}/ toolchains;
+              dirname="zephyr-sdk-ng-$GIT_TAG_NAME"
+              filename="${filename}.tar.bz2"
+              mkdir -p ${dirname};
+              pushd toolchains;
+              for f in "*tar.bz2"; do
+                tar xvf $f;
+              done;
+              cd  build/;
+              mv output ../${dirname};
+              popd;
+              tar jcf ${$filename} ${dirname}
+              echo "SDK file name: ${filename}"
+              if [ "${IS_PRERELEASE}" = "true" -o "${IS_RELEASE}" = "true" ]; then
+                # Define variables.
+                GH_API="https://api.github.com"
+                GH_REPO="$GH_API/repos/zephyrproject-rtos/sdk-ng"
+                GH_TAGS="$GH_REPO/releases/tags/$GIT_TAG_NAME"
+                AUTH="Authorization: token $GH_TOKEN"
+                WGET_ARGS="--content-disposition --auth-no-challenge --no-cookie"
+                CURL_ARGS="-LJO#"
+
+                # Validate token.
+                curl -o /dev/null -sH "$AUTH" $GH_REPO || { echo "Error: Invalid repo, token or network issue!";  exit 1; }
+
+                # Read asset tags.
+                response=$(curl -sH "$AUTH" $GH_TAGS)
+
+                # Get ID of the asset based on given filename.
+                eval $(echo "$response" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=')
+                [ "$id" ] || { echo "Error: Failed to get release id for tag: $tag"; echo "$response" | awk 'length($0)<100' >&2; exit 1; }
+
+                # Upload asset
+                echo "Uploading asset ${filename}... "
+
+                # Construct url
+                GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=$(basename $filename)"
+                echo ${GH_ASSET}
+
+                curl "$GITHUB_OAUTH_BASIC" --data-binary @"$filename" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" $GH_ASSET
+              fi
+            fi
+
   - name: create_sdk
     type: runSh
     steps:
@@ -77,24 +136,6 @@ jobs:
       - IN: zephyr-testing_ciRepo
       - IN: s3-token-simple
       - IN: codecov_testing
-
-  - name: zephyr-checks
-    type: runSh
-    steps:
-      - IN: testing_repo
-      - TASK:
-          name: checks
-          runtime:
-            container: true
-            options:
-              imageName: zephyrprojectrtos/ci
-              imageTag: v0.4-rc12
-              pull: true
-              options: "--privileged=true --tty --net=bridge"
-          script:
-            - ls -la IN/
-            - cd IN/testing_repo/gitRepo
-            - ls -la
 
   - name: zephyr-daily-doc
     type: runSh
