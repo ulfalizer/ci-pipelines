@@ -20,18 +20,23 @@ jobs:
               sudo apt-get install -y makeself p7zip-full cpio tree;
               sudo pip install awscli;
               mkdir -p toolchains;
-              aws s3 sync ${S3_PATH}/ toolchains;
+              aws s3 sync --quiet ${S3_PATH}/ toolchains;
               dirname="zephyr-sdk-ng-$GIT_TAG_NAME"
-              filename="${filename}.tar.bz2"
+              filename="${dirname}.tar.bz2"
               mkdir -p ${dirname};
               pushd toolchains;
-              for f in "*tar.bz2"; do
-                tar xvf $f;
+              for f in *.tar.bz2; do
+                echo "Uncompressing ${f}..."
+                tar xf $f;
               done;
               cd  build/;
-              mv output ../${dirname};
+              mv output/* ../../${dirname}/;
+              cd ..
               popd;
-              tar jcf ${$filename} ${dirname}
+              echo "Compressing archive..."
+              tar jcf ${filename} ${dirname}
+              echo "Uploading to S3"
+              aws s3 cp ${filename} ${S3_PATH}/final/${filename}
               echo "SDK file name: ${filename}"
               if [ "${IS_PRERELEASE}" = "true" -o "${IS_RELEASE}" = "true" ]; then
                 # Define variables.
@@ -54,12 +59,10 @@ jobs:
 
                 # Upload asset
                 echo "Uploading asset ${filename}... "
-
                 # Construct url
-                GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=$(basename $filename)"
+                GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=\"$(basename $filename)\""
                 echo ${GH_ASSET}
-
-                curl "$GITHUB_OAUTH_BASIC" --data-binary @"$filename" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" $GH_ASSET
+                curl --data-binary @"${filename}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET}
               fi
             fi
 
@@ -111,7 +114,7 @@ jobs:
                 GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/meta-zephyr-sdk/releases/$id/assets?name=$(basename $filename)"
                 echo ${GH_ASSET}
 
-                curl "$GITHUB_OAUTH_BASIC" --data-binary @"$filename" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" $GH_ASSET
+                curl --data-binary @"$filename" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" $GH_ASSET
               fi
             fi
 
