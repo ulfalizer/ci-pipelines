@@ -166,7 +166,6 @@ jobs:
 
   - name: zephyr-checks
     type: runSh
-    allowPublicAccess: true
     steps:
       - IN: github_token
       - IN: testing_repo
