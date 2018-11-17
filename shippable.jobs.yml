@@ -118,6 +118,7 @@ jobs:
               fi
             fi
 
+
   - name: ci-test_runCI
     type: runCI
     steps:
@@ -162,3 +163,45 @@ jobs:
               options: "--privileged=true --tty --net=bridge"
           script:
             - . /build/IN/ci_test_repo/gitRepo/scripts/build-docs.sh
+
+  - name: zephyr-checks
+    type: runSh
+    allowPublicAccess: true
+    steps:
+      - IN: testing_repo
+        showBuildStatus:  true
+      - TASK:
+          name: checks
+          runtime:
+            container: true
+            options:
+              imageName: zephyrprojectrtos/ci
+              imageTag: v0.4-rc12
+              pull: true
+              options: "--privileged=true --tty --net=bridge"
+          script:
+            - ls -la IN/
+            - env
+            - cd IN/testing_repo/gitRepo
+            - git fetch origin pull/${TESTING_REPO_PULL_REQUEST}/head
+            - git checkout -f FETCH_HEAD
+            - git merge -q origin/${TESTING_REPO_BRANCH}
+            - git rebase origin/${TESTING_REPO_BASE_BRANCH};
+            - source zephyr-env.sh
+            - export COMMIT_RANGE=origin/${TESTING_REPO_BASE_BRANCH}..HEAD
+            - echo "Building a Pull Request";
+            - echo "Building Documentation";
+            - echo "Commit range:" ${COMMIT_RANGE}
+            - make htmldocs
+            - >
+              if [ "$?" != "0" ]; then
+                echo "Documentation build failed";
+                exit 1;
+              fi
+            - >
+              if [ -s doc/doc.warnings ]; then
+                echo " => New documentation warnings/errors";
+                cp doc/doc.warnings doc.warnings
+              fi;
+            - echo "- Verify commit message, coding style, doc build";
+            - ./scripts/ci/check-compliance.py --commits ${COMMIT_RANGE} || true;
