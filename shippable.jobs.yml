@@ -180,7 +180,7 @@ jobs:
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
-            - pip3 install PyGithub
+            - pip3 install PyGithub junitparser
             - ls -la IN/
             - cd IN/testing_repo/gitRepo
             - git fetch origin pull/${TESTING_REPO_PULL_REQUEST}/head
@@ -192,8 +192,8 @@ jobs:
             - echo "Building a Pull Request";
             - echo "Building Documentation";
             - echo "Commit range:" ${COMMIT_RANGE}
-            - make htmldocs
             - >
+              make htmldocs;
               if [ "$?" != "0" ]; then
                 echo "Documentation build failed";
                 exit 1;
@@ -203,5 +203,4 @@ jobs:
                 echo " => New documentation warnings/errors";
                 cp doc/doc.warnings doc.warnings
               fi;
-            - echo "- Verify commit message, coding style, doc build";
-            - ./scripts/ci/check-compliance.py --commits ${COMMIT_RANGE} || true;
+            - ./scripts/ci/check-compliance.py --commits ${COMMIT_RANGE} -g -p ${TESTING_REPO_PULL_REQUEST} -r ${TESTING_REPO_REPO_FULL_NAME}
