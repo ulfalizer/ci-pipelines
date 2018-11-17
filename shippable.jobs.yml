@@ -169,7 +169,7 @@ jobs:
     steps:
       - IN: github_token
       - IN: testing_repo
-        showBuildStatus:  true
+        showBuildStatus:  false
       - TASK:
           name: checks
           runtime:
@@ -182,18 +182,17 @@ jobs:
           script:
             - pip3 install PyGithub
             - ls -la IN/
-            - env
             - cd IN/testing_repo/gitRepo
             - git fetch origin pull/${TESTING_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
-            - git merge -q origin/${TESTING_REPO_BRANCH}
-            - git rebase origin/${TESTING_REPO_BASE_BRANCH};
+              #- git merge -q origin/${TESTING_REPO_BRANCH}
+              #- git rebase origin/${TESTING_REPO_BASE_BRANCH};
             - source zephyr-env.sh
             - export COMMIT_RANGE=origin/${TESTING_REPO_BASE_BRANCH}..HEAD
             - echo "Building a Pull Request";
             - echo "Building Documentation";
             - echo "Commit range:" ${COMMIT_RANGE}
-              #- make htmldocs
+            - make htmldocs
             - >
               if [ "$?" != "0" ]; then
                 echo "Documentation build failed";
