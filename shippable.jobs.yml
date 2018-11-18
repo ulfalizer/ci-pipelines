@@ -185,9 +185,11 @@ jobs:
             - cd IN/testing_repo/gitRepo
             - git fetch origin pull/${TESTING_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
+            - source zephyr-env.sh
+            - export SHA=$(git rev-parse HEAD)
+            - ./scripts/ci/check-compliance.py -g -r ${TESTING_REPO_REPO_FULL_NAME} -s -S ${SHA}
               #- git merge -q origin/${TESTING_REPO_BRANCH}
               #- git rebase origin/${TESTING_REPO_BASE_BRANCH};
-            - source zephyr-env.sh
             - export COMMIT_RANGE=origin/${TESTING_REPO_BASE_BRANCH}..HEAD
             - echo "Building a Pull Request";
             - echo "Building Documentation";
@@ -203,4 +205,4 @@ jobs:
                 echo " => New documentation warnings/errors";
                 cp doc/_build/doc.warnings doc.warnings
               fi;
-            - ./scripts/ci/check-compliance.py --commits ${COMMIT_RANGE} -g -p ${TESTING_REPO_PULL_REQUEST} -r ${TESTING_REPO_REPO_FULL_NAME}
+            - ./scripts/ci/check-compliance.py --commits ${COMMIT_RANGE} -g -p ${TESTING_REPO_PULL_REQUEST} -r ${TESTING_REPO_REPO_FULL_NAME} -S ${SHA}
