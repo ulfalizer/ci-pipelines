@@ -176,11 +176,10 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.4-rc12
+              imageTag: v0.4-rc14
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
-            - pip3 install PyGithub junitparser
             - ls -la IN/
             - cd IN/testing_repo/gitRepo
             - git fetch origin pull/${TESTING_REPO_PULL_REQUEST}/head
