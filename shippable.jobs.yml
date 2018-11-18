@@ -201,7 +201,7 @@ jobs:
                 exit 1;
               fi
             - >
-              if [ -s doc/doc.warnings ]; then
+              if [ -s doc/_build/doc.warnings ]; then
                 echo " => New documentation warnings/errors";
                 cp doc/_build/doc.warnings doc.warnings
               fi;
