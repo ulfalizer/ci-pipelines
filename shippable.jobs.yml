@@ -209,6 +209,7 @@ jobs:
 
   - name: zephyr-checks-main
     type: runSh
+    triggerMode: parallel
     steps:
       - IN: github_token
       - IN: main_repo
