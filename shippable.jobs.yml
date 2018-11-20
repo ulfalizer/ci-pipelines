@@ -205,3 +205,43 @@ jobs:
                 cp doc/_build/doc.warnings doc.warnings
               fi;
             - ./scripts/ci/check-compliance.py --commits ${COMMIT_RANGE} -g -p ${TESTING_REPO_PULL_REQUEST} -r ${TESTING_REPO_REPO_FULL_NAME} -S ${SHA}
+
+
+  - name: zephyr-checks-main
+    type: runSh
+    steps:
+      - IN: github_token
+      - IN: main_repo
+        showBuildStatus:  false
+      - TASK:
+          name: checks
+          runtime:
+            container: true
+            options:
+              imageName: zephyrprojectrtos/ci
+              imageTag: v0.5-rc1
+              pull: true
+              options: "--privileged=true --tty --net=bridge"
+          script:
+            - cd IN/testing_repo/gitRepo
+            - git fetch origin pull/${MAIN_REPO_PULL_REQUEST}/head
+            - git checkout -f FETCH_HEAD
+            - source zephyr-env.sh
+            - export SHA=$(git rev-parse HEAD)
+            - ./scripts/ci/check-compliance.py -g -r ${MAIN_REPO_REPO_FULL_NAME} -s -S ${SHA}
+            - export COMMIT_RANGE=origin/${MAIN_REPO_BASE_BRANCH}..HEAD
+            - echo "Building a Pull Request";
+            - echo "Building Documentation";
+            - echo "Commit range:" ${COMMIT_RANGE}
+            - >
+              make htmldocs;
+              if [ "$?" != "0" ]; then
+                echo "Documentation build failed";
+                exit 1;
+              fi
+            - >
+              if [ -s doc/_build/doc.warnings ]; then
+                echo " => New documentation warnings/errors";
+                cp doc/_build/doc.warnings doc.warnings
+              fi;
+            - ./scripts/ci/check-compliance.py --commits ${COMMIT_RANGE} -g -p ${MAIN_REPO_PULL_REQUEST} -r ${MAIN_REPO_REPO_FULL_NAME} -S ${SHA}

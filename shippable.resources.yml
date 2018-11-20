@@ -61,7 +61,7 @@ resources:
       pointer:
           sourceName: zephyrproject-rtos/zephyr
           branch: master
-          buildOnPullRequest: false
+          buildOnPullRequest: true
           buildOnCommit: true
 
     - name: testing_repo
