@@ -223,7 +223,7 @@ jobs:
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
-            - cd IN/testing_repo/gitRepo
+            - cd IN/main_repo/gitRepo
             - git fetch origin pull/${MAIN_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
             - source zephyr-env.sh
