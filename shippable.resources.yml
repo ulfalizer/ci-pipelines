@@ -64,6 +64,15 @@ resources:
           buildOnPullRequest: true
           buildOnCommit: false
 
+    - name: sdk_ng_repo
+      type: gitRepo
+      integration: github
+      pointer:
+          sourceName: zephyrproject-rtos/sdk-ng
+          branch: master
+          buildOnPullRequest: true
+          buildOnCommit: true
+
     - name: testing_repo
       type: gitRepo
       integration: github

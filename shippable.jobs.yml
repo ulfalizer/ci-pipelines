@@ -206,6 +206,21 @@ jobs:
               fi;
             - ./scripts/ci/check-compliance.py --commits ${COMMIT_RANGE} -g -p ${TESTING_REPO_PULL_REQUEST} -r ${TESTING_REPO_REPO_FULL_NAME} -S ${SHA}
 
+  - name: sdk_ng_ci
+    type: runSh
+    runtime:
+      nodePool: macos_pool
+    steps:
+      - IN: sdk_ng_repo
+      - TASK:
+          name: build_sdk
+          script:
+            # cd to the gitRepo directory
+            - cd $(shipctl get_resource_state "sdk_ng_repo")
+            # run the build script
+            - pwd
+            - ls -la
+            - ./go.sh i586
 
   - name: zephyr-checks-main
     type: runSh
