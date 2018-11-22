@@ -186,8 +186,10 @@ jobs:
             - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
             - git fetch origin pull/${TESTING_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
-            - source zephyr-env.sh
             - export SHA=$(git rev-parse HEAD)
+            - git merge -q origin/${TESTING_REPO_BASE_BRANCH}
+            - git rebase origin/${TESTING_REPO_BASE_BRANCH};
+            - source zephyr-env.sh
             - ${CITOOLS}/scripts/check_compliance.py -g -r ${TESTING_REPO_REPO_FULL_NAME} -s -S ${SHA}
             - export COMMIT_RANGE=origin/${TESTING_REPO_BASE_BRANCH}..HEAD
             - echo "Building a Pull Request";
@@ -249,8 +251,8 @@ jobs:
             - cd IN/main_repo/gitRepo
             - git fetch origin pull/${MAIN_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
-            - source zephyr-env.sh
             - export SHA=$(git rev-parse HEAD)
+            - source zephyr-env.sh
             - ./scripts/ci/check-compliance.py -g -r ${MAIN_REPO_REPO_FULL_NAME} -s -S ${SHA}
             - export COMMIT_RANGE=origin/${MAIN_REPO_BASE_BRANCH}..HEAD
             - echo "Building a Pull Request";
