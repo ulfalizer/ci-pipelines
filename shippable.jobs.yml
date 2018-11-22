@@ -252,8 +252,10 @@ jobs:
             - git fetch origin pull/${MAIN_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
             - export SHA=$(git rev-parse HEAD)
-            - source zephyr-env.sh
             - ./scripts/ci/check-compliance.py -g -r ${MAIN_REPO_REPO_FULL_NAME} -s -S ${SHA}
+            - git merge -q origin/${MAIN_REPO_BASE_BRANCH}
+            - git rebase origin/${MAIN_REPO_BASE_BRANCH};
+            - source zephyr-env.sh
             - export COMMIT_RANGE=origin/${MAIN_REPO_BASE_BRANCH}..HEAD
             - echo "Building a Pull Request";
             - echo "Building Documentation";
