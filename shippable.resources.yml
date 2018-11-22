@@ -30,12 +30,12 @@ resources:
     - name: daily-verify
       type: time
       seed:
-          interval: "53 3 * * *"
+          interval: "53 5 * * *"
 
     - name: daily-verify-arm
       type: time
       seed:
-          interval: "53 2 * * *"
+          interval: "53 7 * * *"
 
     - name: ci_test_repo
       type: gitRepo
