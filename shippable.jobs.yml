@@ -168,6 +168,8 @@ jobs:
     type: runSh
     steps:
       - IN: github_token
+      - IN: s3-token
+      - IN: ci_tools_repo
       - IN: testing_repo
         showBuildStatus:  false
       - TASK:
@@ -176,19 +178,17 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.5-rc2
+              imageTag: v0.5-rc3
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
-            - ls -la IN/
-            - cd IN/testing_repo/gitRepo
+            - cd $(shipctl get_resource_state "testing_repo")
+            - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
             - git fetch origin pull/${TESTING_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
             - source zephyr-env.sh
             - export SHA=$(git rev-parse HEAD)
-            - ./scripts/ci/check-compliance.py -g -r ${TESTING_REPO_REPO_FULL_NAME} -s -S ${SHA}
-              #- git merge -q origin/${TESTING_REPO_BRANCH}
-              #- git rebase origin/${TESTING_REPO_BASE_BRANCH};
+            - ${CITOOLS}/scripts/check_compliance.py -g -r ${TESTING_REPO_REPO_FULL_NAME} -s -S ${SHA}
             - export COMMIT_RANGE=origin/${TESTING_REPO_BASE_BRANCH}..HEAD
             - echo "Building a Pull Request";
             - echo "Building Documentation";
@@ -204,7 +204,14 @@ jobs:
                 echo " => New documentation warnings/errors";
                 cp doc/_build/doc.warnings doc.warnings
               fi;
-            - ./scripts/ci/check-compliance.py --commits ${COMMIT_RANGE} -g -p ${TESTING_REPO_PULL_REQUEST} -r ${TESTING_REPO_REPO_FULL_NAME} -S ${SHA}
+            - ${CITOOLS}/scripts/check_compliance.py --commits ${COMMIT_RANGE} -g -p ${TESTING_REPO_PULL_REQUEST} -r ${TESTING_REPO_REPO_FULL_NAME} -S ${SHA}
+            - export S3_PATH="s3://builds.zephyrproject.org/${TESTING_REPO_REPO_FULL_NAME}/${TESTING_REPO_PULL_REQUEST}";
+            - junit2html compliance.xml tests.html
+            - mkdir -p ${TESTING_REPO_PULL_REQUEST}
+            - cp *.html ${TESTING_REPO_PULL_REQUEST}
+            - cp -a doc/_build/html ${TESTING_REPO_PULL_REQUEST}/docs
+            - aws s3 cp s3://builds.zephyrproject.org/pr.html ${S3_PATH}/index.html
+            - aws s3 sync ${TESTING_REPO_PULL_REQUEST} ${S3_PATH}
 
   - name: sdk_ng_ci
     type: runSh
