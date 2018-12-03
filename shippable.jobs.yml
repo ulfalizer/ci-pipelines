@@ -170,6 +170,7 @@ jobs:
       - IN: github_token
       - IN: s3-token
       - IN: ci_tools_repo
+        switch: off
       - IN: testing_repo
         showBuildStatus:  false
       - TASK:
@@ -240,6 +241,7 @@ jobs:
       - IN: github_token
       - IN: s3-token
       - IN: ci_tools_repo
+        switch: off
       - IN: main_repo
         showBuildStatus:  false
       - TASK:
