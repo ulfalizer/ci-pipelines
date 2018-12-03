@@ -61,7 +61,7 @@ resources:
       pointer:
           sourceName: zephyrproject-rtos/ci-tools
           branch: master
-          buildOnPullRequest: false
+          buildOnPullRequest: true
           buildOnCommit: true
 
     - name: main_repo
