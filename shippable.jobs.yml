@@ -287,3 +287,56 @@ jobs:
             - aws s3 cp s3://builds.zephyrproject.org/pr.html ${S3_PATH}/index.html
             - aws s3 sync ${MAIN_REPO_PULL_REQUEST} ${S3_PATH}
 
+  - name: zephyr-checks-tools
+    type: runSh
+    triggerMode: parallel
+    steps:
+      - IN: github_token
+      - IN: s3-token
+      - IN: ci_tools_repo
+        showBuildStatus:  false
+      - TASK:
+          name: tools_check
+          runtime:
+            container: true
+            options:
+              imageName: zephyrprojectrtos/ci
+              imageTag: v0.5-rc3
+              pull: true
+              options: "--privileged=true --tty --net=bridge"
+          script:
+            - cd $(shipctl get_resource_state "ci_tools_repo")
+            - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
+            - git fetch origin pull/${CI_TOOLS_REPO_PULL_REQUEST}/head
+            - git checkout -f FETCH_HEAD
+            - export SHA=$(git rev-parse HEAD)
+            - git merge -q origin/${CI_TOOLS_REPO_BASE_BRANCH}
+            - git rebase origin/${CI_TOOLS_REPO_BASE_BRANCH};
+            - source zephyr-env.sh
+            - ${CITOOLS}/scripts/check_compliance.py -g -r ${CI_TOOLS_REPO_REPO_FULL_NAME} -s -S ${SHA}
+            - export COMMIT_RANGE=origin/${CI_TOOLS_REPO_BASE_BRANCH}..HEAD
+            - echo "Building a Pull Request";
+            - ${CITOOLS}/scripts/check_compliance.py -e Documentation --commits ${COMMIT_RANGE} -g -p ${CI_TOOLS_REPO_PULL_REQUEST} -r ${CI_TOOLS_REPO_REPO_FULL_NAME} -S ${SHA} -o first_pass.xml || true
+            - echo "Building Documentation";
+            - echo "Commit range:" ${COMMIT_RANGE}
+            - >
+              make htmldocs;
+              if [ "$?" != "0" ]; then
+                echo "Documentation build failed";
+                exit 1;
+              fi
+            - >
+              if [ -s doc/_build/doc.warnings ]; then
+                echo " => New documentation warnings/errors";
+                cp doc/_build/doc.warnings doc.warnings
+              fi;
+            - ${CITOOLS}/scripts/check_compliance.py --commits ${COMMIT_RANGE} -g -p ${CI_TOOLS_REPO_PULL_REQUEST} -r ${CI_TOOLS_REPO_REPO_FULL_NAME} -S ${SHA} -m Documentation --previous-run first_pass.xml -o second_pass.xml || true
+            - export S3_PATH="s3://builds.zephyrproject.org/${CI_TOOLS_REPO_REPO_FULL_NAME}/${CI_TOOLS_REPO_PULL_REQUEST}";
+            - ${CITOOLS}/scripts/merge_junit.py first_pass.xml second_pass.xml > compliance.xml
+            - junit2html compliance.xml tests.html
+            - mkdir -p ${CI_TOOLS_REPO_PULL_REQUEST}
+            - cp *.html ${CI_TOOLS_REPO_PULL_REQUEST}
+            - cp -a doc/_build/html ${CI_TOOLS_REPO_PULL_REQUEST}/docs
+            - aws s3 cp s3://builds.zephyrproject.org/pr.html ${S3_PATH}/index.html
+            - aws s3 sync ${CI_TOOLS_REPO_PULL_REQUEST} ${S3_PATH}
+
