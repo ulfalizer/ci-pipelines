@@ -269,9 +269,9 @@ jobs:
             - echo "Building Documentation";
             - echo "Commit range:" ${COMMIT_RANGE}
             - >
-              make htmldocs;
-              if [ "$?" != "0" ]; then
-                echo "Documentation build with 'make htmldocs' failed." >> doc/_build/doc.warnings
+              make htmldocs || true;
+              if [ "$RET" == "2" ]; then
+                echo "Documentation build with 'make htmldocs' failed." >> doc.warnings;
               fi
             - >
               if [ -s doc/_build/doc.warnings ]; then
