@@ -147,9 +147,7 @@ jobs:
       - IN: s3-token
       - IN: main_repo
         switch: off
-      - IN: ci_test_repo
-        switch: off
-      - IN: docs_theme_repo
+      - IN: ci_tools_repo
         switch: off
       - IN: daily-docs
       - TASK:
@@ -158,11 +156,12 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.5-rc2
+              imageTag: v0.5-rc3
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
-            - . /build/IN/ci_test_repo/gitRepo/scripts/build-docs.sh
+            - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
+            - ${CITOOLS}/scripts/build-docs.sh
 
   - name: zephyr-checks
     type: runSh
