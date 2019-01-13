@@ -9,6 +9,8 @@ jobs:
     steps:
       - IN: s3-token-simple
       - IN: sdk-ng_ciRepo
+      - IN: sdk_ng_repo
+        switch: off
       - IN: sdk-ng_runCI
       - IN: github_token
       - TASK:
@@ -19,25 +21,16 @@ jobs:
               export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNUMBER}";
               sudo apt-get install -y makeself p7zip-full cpio tree;
               sudo pip install awscli;
-              mkdir -p toolchains;
-              aws s3 sync --quiet ${S3_PATH}/ toolchains;
-              dirname="zephyr-sdk-ng-$GIT_TAG_NAME"
-              filename="${dirname}.tar.bz2"
-              mkdir -p ${dirname};
-              pushd toolchains;
-              for f in *.tar.bz2; do
-                echo "Uncompressing ${f}..."
-                tar xf $f;
-              done;
-              cd  build/;
-              mv output/* ../../${dirname}/;
-              cd ..
-              popd;
-              echo "Compressing archive..."
-              tar jcf ${filename} ${dirname}
-              echo "Uploading to S3"
-              aws s3 cp ${filename} ${S3_PATH}/final/${filename}
-              echo "SDK file name: ${filename}"
+              cd $(shipctl get_resource_state "sdk_ng_repo");
+              ls -la;
+              mkdir -p scripts/toolchains;
+              aws s3 sync --quiet ${S3_PATH}/ scripts/toolchains;
+              pushd scripts/;
+              ./make_zephyr_sdk.sh;
+              filename=$(ls -1 zephyr-sdk*);
+              echo "Uploading to S3";
+              aws s3 cp ${filename} ${S3_PATH}/final/${filename};
+              echo "SDK file name: ${filename}";
               if [ "${IS_PRERELEASE}" = "true" -o "${IS_RELEASE}" = "true" ]; then
                 # Define variables.
                 GH_API="https://api.github.com"
