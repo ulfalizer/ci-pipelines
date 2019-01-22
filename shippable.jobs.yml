@@ -139,7 +139,7 @@ jobs:
     type: runSh
     steps:
       - IN: s3-token
-      - IN: main_repo
+      - IN: main_repo_doc
         switch: off
       - IN: daily-docs
       - TASK:
@@ -152,6 +152,7 @@ jobs:
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
+            - cd $(shipctl get_resource_state "main_repo_doc");
             - git clone https://github.com/zephyrproject-rtos/ci-tools.git
             - ci-tools/scripts/build-docs.sh
 
