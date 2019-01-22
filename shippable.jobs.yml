@@ -141,8 +141,6 @@ jobs:
       - IN: s3-token
       - IN: main_repo
         switch: off
-      - IN: ci_tools_repo
-        switch: off
       - IN: daily-docs
       - TASK:
           name: daily_docs
@@ -154,8 +152,8 @@ jobs:
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
-            - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
-            - ${CITOOLS}/scripts/build-docs.sh
+            - git clone https://github.com/zephyrproject-rtos/ci-tools.git
+            - ci-tools/scripts/build-docs.sh
 
   - name: zephyr-checks
     type: runSh
