@@ -145,7 +145,8 @@ jobs:
             - cd $(shipctl get_resource_state "main_repo_all_prep")
             - source zephyr-env.sh;
             - ./scripts/sanitycheck --all --save-tests tests.csv
-            - shipctl copy_file_to_state tests.csv
+            - gzip tests.csv
+            - shipctl copy_file_to_state tests.csv.gz
 
 
   - name: ci-test_runCI
@@ -209,6 +210,7 @@ jobs:
               options: "--privileged=true --tty --net=bridge"
           script:
             - cd $(shipctl get_resource_state "testing_repo")
+            - pip3 install west
             - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
             - git fetch origin pull/${TESTING_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
