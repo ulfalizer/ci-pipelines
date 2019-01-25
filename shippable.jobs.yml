@@ -113,14 +113,45 @@ jobs:
             fi
 
 
-  - name: ci-test_runCI
-    type: runCI
+
+  - name: ci_test_prep
+    type: runSh
     steps:
       - IN: daily-verify-2
       - IN: daily-verify-1
       - IN: daily-verify-arm
       - IN: ci-test_ciRepo
+      - IN: main_repo_all_prep
       - IN: s3-token
+      - TASK:
+          name: prep_sanity
+          runtime:
+            container: true
+            options:
+              imageName: zephyrprojectrtos/ci
+              imageTag: v0.5-rc5
+              pull: true
+              options: "--privileged=true --tty --net=bridge"
+          script:
+            - export SDK=0.9.5
+            - export SANITYCHECK_OPTIONS=" --inline-logs -N"
+            - export SANITYCHECK_OPTIONS_RETRY=" --only-failed --outdir=out-2nd-pass"
+            - export ZEPHYR_SDK_INSTALL_DIR=/opt/sdk/zephyr-sdk-0.9.5
+            - export ZEPHYR_TOOLCHAIN_VARIANT=zephyr
+            - export COVERAGE="--all "
+            - export QEMU_BIN_PATH=${ZEPHYR_SDK_INSTALL_DIR}/sysroots/x86_64-pokysdk-linux/usr/bin/
+            - export QEMU_BIOS=${ZEPHYR_SDK_INSTALL_DIR}/sysroots/x86_64-pokysdk-linux/usr/share/qemu
+            - export DTC=${ZEPHYR_SDK_INSTALL_DIR}/sysroots/x86_64-pokysdk-linux/usr/bin/dtc
+            - cd $(shipctl get_resource_state "main_repo_all_prep")
+            - source zephyr-env.sh;
+            - ./scripts/sanitycheck --all -T tests/kernel/threads/ --save-tests tests.csv
+
+
+  - name: ci-test_runCI
+    type: runCI
+    steps:
+      - IN: ci_test_prep
+
 
   - name: zephyr_runCI
     type: runCI
