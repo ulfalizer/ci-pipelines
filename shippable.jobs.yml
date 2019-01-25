@@ -144,7 +144,8 @@ jobs:
             - export DTC=${ZEPHYR_SDK_INSTALL_DIR}/sysroots/x86_64-pokysdk-linux/usr/bin/dtc
             - cd $(shipctl get_resource_state "main_repo_all_prep")
             - source zephyr-env.sh;
-            - ./scripts/sanitycheck --all -T tests/kernel/threads/ --save-tests tests.csv
+            - ./scripts/sanitycheck --all --save-tests tests.csv
+            - shipctl copy_file_to_state tests.csv
 
 
   - name: ci-test_runCI
