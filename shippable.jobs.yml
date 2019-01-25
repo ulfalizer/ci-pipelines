@@ -273,6 +273,10 @@ jobs:
             - git merge -q origin/${MAIN_REPO_BASE_BRANCH}
             - git rebase origin/${MAIN_REPO_BASE_BRANCH};
             - source zephyr-env.sh
+            - cd ..
+            - sudo pip3 install -U west
+            - west init -l zephyr
+            - cd zephyr
             - ${CITOOLS}/scripts/check_compliance.py -g -r ${MAIN_REPO_REPO_FULL_NAME} -s -S ${SHA}
             - export COMMIT_RANGE=origin/${MAIN_REPO_BASE_BRANCH}..HEAD
             - echo "Building a Pull Request";
