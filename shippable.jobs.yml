@@ -116,7 +116,8 @@ jobs:
   - name: ci-test_runCI
     type: runCI
     steps:
-      - IN: daily-verify
+      - IN: daily-verify-2
+      - IN: daily-verify-1
       - IN: daily-verify-arm
       - IN: ci-test_ciRepo
       - IN: s3-token

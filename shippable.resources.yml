@@ -27,10 +27,15 @@ resources:
       seed:
           interval: "50 22 * * *"
 
-    - name: daily-verify
+    - name: daily-verify-1
       type: time
       seed:
-          interval: "53 0 * * *"
+          interval: "05 4 * * *"
+
+    - name: daily-verify-2
+      type: time
+      seed:
+          interval: "23 1 * * *"
 
     - name: daily-verify-arm
       type: time
