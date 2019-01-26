@@ -117,8 +117,7 @@ jobs:
   - name: ci_test_prep
     type: runSh
     steps:
-      - IN: daily-verify-2
-      - IN: daily-verify-1
+      - IN: daily-verify
       - IN: daily-verify-arm
       - IN: ci-test_ciRepo
       - IN: main_repo_all_prep
