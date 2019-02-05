@@ -121,6 +121,7 @@ jobs:
       - IN: daily-verify-arm
       - IN: ci-test_ciRepo
       - IN: main_repo_all_prep
+        switch: off
       - IN: s3-token
       - TASK:
           name: prep_sanity
