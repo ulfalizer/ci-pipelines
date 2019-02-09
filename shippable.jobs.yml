@@ -295,14 +295,17 @@ jobs:
                 cp doc/_build/doc.warnings doc.warnings
               fi;
             - ${CITOOLS}/scripts/check_compliance.py --commits ${COMMIT_RANGE} -g -p ${MAIN_REPO_PULL_REQUEST} -r ${MAIN_REPO_REPO_FULL_NAME} -S ${SHA} -m Documentation --previous-run first_pass.xml -o second_pass.xml || true
-            - export S3_PATH="s3://builds.zephyrproject.org/${MAIN_REPO_REPO_FULL_NAME}/${MAIN_REPO_PULL_REQUEST}";
-            - ${CITOOLS}/scripts/merge_junit.py first_pass.xml second_pass.xml > compliance.xml
-            - junit2html compliance.xml tests.html
-            - mkdir -p ${MAIN_REPO_PULL_REQUEST}
-            - cp *.html ${MAIN_REPO_PULL_REQUEST}
-            - cp -a doc/_build/html ${MAIN_REPO_PULL_REQUEST}/docs
-            - aws s3 cp s3://builds.zephyrproject.org/pr.html ${S3_PATH}/index.html
-            - aws s3 sync ${MAIN_REPO_PULL_REQUEST} ${S3_PATH}
+            - >
+              export S3_PATH="s3://builds.zephyrproject.org/${MAIN_REPO_REPO_FULL_NAME}/${MAIN_REPO_PULL_REQUEST}";
+              ${CITOOLS}/scripts/merge_junit.py first_pass.xml second_pass.xml > compliance.xml;
+              junit2html compliance.xml tests.html;
+              mkdir -p ${MAIN_REPO_PULL_REQUEST};
+              cp *.html ${MAIN_REPO_PULL_REQUEST};
+              if [ ! -f docs_failed ]; then
+                cp -a doc/_build/html ${MAIN_REPO_PULL_REQUEST}/docs;
+              fi;
+              aws s3 cp s3://builds.zephyrproject.org/pr.html ${S3_PATH}/index.html;
+              aws s3 sync ${MAIN_REPO_PULL_REQUEST} ${S3_PATH};
 
   - name: zephyr-checks-tools
     type: runSh
