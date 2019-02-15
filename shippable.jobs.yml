@@ -35,7 +35,7 @@ jobs:
             ./make_zephyr_sdk.sh;
             filename=$(ls -1 zephyr-sdk*);
             echo "Uploading to S3";
-            aws s3 cp ${filename} ${S3_PATH}/final/${filename};
+            #aws s3 cp ${filename} ${S3_PATH}/final/${filename};
             echo "SDK file name: ${filename}";
             if [ "${IS_PRERELEASE}" = "true" -o "${IS_RELEASE}" = "true" ]; then
               # Define variables.
