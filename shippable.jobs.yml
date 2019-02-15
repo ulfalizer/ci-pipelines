@@ -13,7 +13,7 @@ jobs:
   - name: create_sdk_ng
     type: runSh
     steps:
-      - IN: s3-token-simple
+      - IN: s3-token
       - IN: sdk-ng_ciRepo
       - IN: sdk_ng_repo
         switch: off
