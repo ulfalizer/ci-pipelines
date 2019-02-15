@@ -31,10 +31,10 @@ jobs:
             mkdir -p scripts/toolchains;
             aws s3 sync --quiet ${S3_PATH}/ scripts/toolchains;
             chmod +x scripts/toolchains/*.sh;
-            pushd scripts/;
             if [ -n "${PULL_REQUEST}" ]; then
               sed -i "s/$/-pr-${PULL_REQUEST}/" VERSION;
             fi;
+            pushd scripts/;
             ./make_zephyr_sdk.sh;
             filename=$(ls -1 zephyr-sdk*);
             echo "Uploading to S3";
