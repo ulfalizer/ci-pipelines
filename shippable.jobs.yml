@@ -23,47 +23,46 @@ jobs:
         - script: |
             test -f /build/IN/sdk-ng_runCI/runCI/sdk.env && . /build/IN/sdk-ng_runCI/runCI/sdk.env;
             cat /build/IN/sdk-ng_runCI/runCI/sdk.env;
-            if [ -n "${GIT_TAG_NAME}" ]; then
-              export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNUMBER}";
-              sudo apt-get install -y makeself p7zip-full cpio tree;
-              sudo pip install awscli;
-              cd $(shipctl get_resource_state "sdk_ng_repo");
-              ls -la;
-              mkdir -p scripts/toolchains;
-              aws s3 sync --quiet ${S3_PATH}/ scripts/toolchains;
-              chmod +x scripts/toolchains/*.sh;
-              pushd scripts/;
-              ./make_zephyr_sdk.sh;
-              filename=$(ls -1 zephyr-sdk*);
-              echo "Uploading to S3";
-              aws s3 cp ${filename} ${S3_PATH}/final/${filename};
-              echo "SDK file name: ${filename}";
-              if [ "${IS_PRERELEASE}" = "true" -o "${IS_RELEASE}" = "true" ]; then
-                # Define variables.
-                GH_API="https://api.github.com"
-                GH_REPO="$GH_API/repos/zephyrproject-rtos/sdk-ng"
-                GH_TAGS="$GH_REPO/releases/tags/$GIT_TAG_NAME"
-                AUTH="Authorization: token $GH_TOKEN"
-                WGET_ARGS="--content-disposition --auth-no-challenge --no-cookie"
-                CURL_ARGS="-LJO#"
+            export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNUMBER}";
+            sudo apt-get install -y makeself p7zip-full cpio tree;
+            sudo pip install awscli;
+            cd $(shipctl get_resource_state "sdk_ng_repo");
+            ls -la;
+            mkdir -p scripts/toolchains;
+            aws s3 sync --quiet ${S3_PATH}/ scripts/toolchains;
+            chmod +x scripts/toolchains/*.sh;
+            pushd scripts/;
+            ./make_zephyr_sdk.sh;
+            filename=$(ls -1 zephyr-sdk*);
+            echo "Uploading to S3";
+            aws s3 cp ${filename} ${S3_PATH}/final/${filename};
+            echo "SDK file name: ${filename}";
+            if [ "${IS_PRERELEASE}" = "true" -o "${IS_RELEASE}" = "true" ]; then
+              # Define variables.
+              GH_API="https://api.github.com"
+              GH_REPO="$GH_API/repos/zephyrproject-rtos/sdk-ng"
+              GH_TAGS="$GH_REPO/releases/tags/$GIT_TAG_NAME"
+              AUTH="Authorization: token $GH_TOKEN"
+              WGET_ARGS="--content-disposition --auth-no-challenge --no-cookie"
+              CURL_ARGS="-LJO#"
 
-                # Validate token.
-                curl -o /dev/null -sH "$AUTH" $GH_REPO || { echo "Error: Invalid repo, token or network issue!";  exit 1; }
+              # Validate token.
+              curl -o /dev/null -sH "$AUTH" $GH_REPO || { echo "Error: Invalid repo, token or network issue!";  exit 1; }
 
-                # Read asset tags.
-                response=$(curl -sH "$AUTH" $GH_TAGS)
+              # Read asset tags.
+              response=$(curl -sH "$AUTH" $GH_TAGS)
 
-                # Get ID of the asset based on given filename.
-                eval $(echo "$response" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=')
-                [ "$id" ] || { echo "Error: Failed to get release id for tag: $tag"; echo "$response" | awk 'length($0)<100' >&2; exit 1; }
+              # Get ID of the asset based on given filename.
+              eval $(echo "$response" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=')
+              [ "$id" ] || { echo "Error: Failed to get release id for tag: $tag"; echo "$response" | awk 'length($0)<100' >&2; exit 1; }
 
-                # Upload asset
-                echo "Uploading asset ${filename}... "
-                # Construct url
-                GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=\"$(basename $filename)\""
-                echo ${GH_ASSET}
-                curl --data-binary @"${filename}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET}
-            elif [ -n "${PULL_REUEST}" ]; then
+              # Upload asset
+              echo "Uploading asset ${filename}... "
+              # Construct url
+              GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=\"$(basename $filename)\""
+              echo ${GH_ASSET}
+              curl --data-binary @"${filename}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET};
+            elif [ -n "${PULL_REQUEST}" ]; then
               export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNUMBER}";
               sudo apt-get install -y makeself p7zip-full cpio tree;
               sudo pip install awscli;
