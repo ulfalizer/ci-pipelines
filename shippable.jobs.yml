@@ -31,7 +31,7 @@ jobs:
             mkdir -p scripts/toolchains;
             aws s3 sync --quiet ${S3_PATH}/ scripts/toolchains;
             chmod +x scripts/toolchains/*.sh;
-            if [ -n "${PULL_REQUEST}" ]; then
+            if [ "${PULL_REQUEST}" = "false" ]; then
               sed -i "s/$/-pr-${PULL_REQUEST}/" VERSION;
             fi;
             pushd scripts/;
