@@ -215,7 +215,7 @@ jobs:
     steps:
       - IN: github_token
       - IN: s3-token
-      - IN: ci_tools_repo
+      - IN: ci_tools_check_repo
         switch: off
       - IN: testing_repo
         showBuildStatus:  false
@@ -231,7 +231,7 @@ jobs:
           script:
             - cd $(shipctl get_resource_state "testing_repo")
             - pip3 install west
-            - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
+            - export CITOOLS=$(shipctl get_resource_state "ci_tools_check_repo")
             - git fetch origin pull/${TESTING_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
             - export SHA=$(git rev-parse HEAD)
@@ -287,7 +287,7 @@ jobs:
           script:
             - sudo pip3 install -U west
             - cd $(shipctl get_resource_state "main_repo")
-            - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
+            - export CITOOLS=$(shipctl get_resource_state "ci_tools_check_repo")
             - git fetch origin pull/${MAIN_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
             - export SHA=$(git rev-parse HEAD)
@@ -333,7 +333,7 @@ jobs:
     steps:
       - IN: github_token
       - IN: s3-token
-      - IN: ci_tools_repo
+      - IN: ci_tools_check_repo
         showBuildStatus:  false
       - TASK:
           name: tools_check
@@ -345,8 +345,8 @@ jobs:
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
-            - cd $(shipctl get_resource_state "ci_tools_repo")
-            - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
+            - cd $(shipctl get_resource_state "ci_tools_check_repo")
+            - export CITOOLS=$(shipctl get_resource_state "ci_tools_check_repo")
             - git fetch origin pull/${CI_TOOLS_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
             - export SHA=$(git rev-parse HEAD)
