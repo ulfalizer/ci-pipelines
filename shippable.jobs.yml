@@ -271,7 +271,7 @@ jobs:
     steps:
       - IN: github_token
       - IN: s3-token
-      - IN: ci_tools_checks_repo
+      - IN: ci_tools_check_repo
         switch: off
       - IN: main_repo
         showBuildStatus:  false
