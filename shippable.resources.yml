@@ -32,10 +32,15 @@ resources:
       seed:
           interval: "05 1 * * *"
 
+    - name: daily-verify-newsdk
+      type: time
+      seed:
+          interval: "05 23 * * *"
+
     - name: daily-verify-arm
       type: time
       seed:
-          interval: "53 3 * * *"
+          interval: "53 4 * * *"
 
     - name: ci_test_repo
       type: gitRepo
