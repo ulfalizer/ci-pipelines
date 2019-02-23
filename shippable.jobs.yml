@@ -352,7 +352,7 @@ jobs:
     steps:
       - IN: github_token
       - IN: s3-token
-      - IN: ci_tools_check_repo
+      - IN: ci_tools_repo
         showBuildStatus:  false
       - TASK:
           name: tools_check
@@ -364,8 +364,8 @@ jobs:
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
-            - cd $(shipctl get_resource_state "ci_tools_check_repo")
-            - export CITOOLS=$(shipctl get_resource_state "ci_tools_check_repo")
+            - cd $(shipctl get_resource_state "ci_tools_repo")
+            - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
             - git fetch origin pull/${CI_TOOLS_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
             - export SHA=$(git rev-parse HEAD)
