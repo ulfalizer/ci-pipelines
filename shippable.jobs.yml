@@ -32,7 +32,7 @@ jobs:
             aws s3 sync --quiet ${S3_PATH}/ scripts/toolchains;
             ls -la scripts/toolchains;
             chmod +x scripts/toolchains/*.sh;
-            if [ "${PULL_REQUEST}" = "false" ]; then
+            if [ "${PULL_REQUEST}" != "false" ]; then
               sed -i "s/$/-pr-${PULL_REQUEST}/" VERSION;
             fi;
             pushd scripts/;
