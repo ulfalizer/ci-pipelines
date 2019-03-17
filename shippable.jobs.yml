@@ -317,11 +317,14 @@ jobs:
             - cp -a gitRepo zephyr
             - west init -l zephyr || true
             - cd zephyr
+            - west update
             - source zephyr-env.sh
             - ${CITOOLS}/scripts/check_compliance.py -g -r ${MAIN_REPO_REPO_FULL_NAME} -s -S ${SHA}
             - export COMMIT_RANGE=origin/${MAIN_REPO_BASE_BRANCH}..HEAD
             - echo "Building a Pull Request";
             - ${CITOOLS}/scripts/check_compliance.py -e Documentation --commits ${COMMIT_RANGE} -g -p ${MAIN_REPO_PULL_REQUEST} -r ${MAIN_REPO_REPO_FULL_NAME} -S ${SHA} -o first_pass.xml || true
+            - cat /tmp/Kconfig.modules
+            - west list --format={posixpath}
             - echo "Building Documentation";
             - echo "Commit range:" ${COMMIT_RANGE}
             - >
