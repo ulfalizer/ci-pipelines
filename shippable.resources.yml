@@ -27,11 +27,6 @@ resources:
       seed:
           interval: "50 22 * * *"
 
-    - name: daily-verify
-      type: time
-      seed:
-          interval: "05 1 * * *"
-
     - name: daily-verify-newsdk
       type: time
       seed:
