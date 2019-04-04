@@ -78,7 +78,9 @@ resources:
       integration: github
       pointer:
           sourceName: zephyrproject-rtos/ci-tools
-          branch: master
+          branches:
+            only:
+              - master
           buildOnPullRequest: false
           buildOnCommit: true
 
@@ -105,7 +107,10 @@ resources:
       integration: github
       pointer:
           sourceName: zephyrproject-rtos/zephyr
-          branch: master
+          branches:
+            only:
+              - master
+              - topic-sensors
           buildOnPullRequest: true
           buildOnCommit: false
 
