@@ -111,6 +111,7 @@ resources:
             only:
               - master
               - topic-sensors
+              - v1.14-branch
           buildOnPullRequest: true
           buildOnCommit: false
 
