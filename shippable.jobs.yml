@@ -23,7 +23,7 @@ jobs:
         - script: |
             test -f /build/IN/sdk-ng_runCI/runCI/sdk.env && . /build/IN/sdk-ng_runCI/runCI/sdk.env;
             cat /build/IN/sdk-ng_runCI/runCI/sdk.env;
-            export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNUMBER}";
+            export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNAME}";
             sudo apt-get install -y makeself p7zip-full cpio tree;
             sudo pip install awscli;
             cd $(shipctl get_resource_state "sdk_ng_repo");
@@ -67,7 +67,7 @@ jobs:
               echo ${GH_ASSET}
               curl --data-binary @"${filename}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET};
             elif [ -n "${PULL_REQUEST}" ]; then
-              export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNUMBER}";
+              export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNAME}";
               sudo apt-get install -y makeself p7zip-full cpio tree;
               sudo pip install awscli;
               cd $(shipctl get_resource_state "sdk_ng_repo");
