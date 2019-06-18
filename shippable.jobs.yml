@@ -305,7 +305,6 @@ jobs:
           script:
             - sudo pip3 install -U west
             - cd $(shipctl get_resource_state "main_repo")
-            - export CITOOLS=$(shipctl get_resource_state "ci_tools_check_repo")
             - git fetch origin pull/${MAIN_REPO_PULL_REQUEST}/head
             - git checkout -f FETCH_HEAD
             - export SHA=$(git rev-parse HEAD)
@@ -316,6 +315,7 @@ jobs:
             - west init -l zephyr || true
             - cd zephyr
             - west update
+            - export CITOOLS=$(west list ci-tools -f"{abspath:18}")
             - source zephyr-env.sh
             - export COMMIT_RANGE=origin/${MAIN_REPO_BASE_BRANCH}..HEAD
             - ${CITOOLS}/scripts/what_changed.py -r ${MAIN_REPO_REPO_FULL_NAME} -p ${MAIN_REPO_PULL_REQUEST} --commits ${COMMIT_RANGE}
