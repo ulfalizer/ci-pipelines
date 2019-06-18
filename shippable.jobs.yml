@@ -37,7 +37,7 @@ jobs:
             fi;
             pushd scripts/;
             ./make_zephyr_sdk.sh;
-            filename=$(ls -1 zephyr-sdk*);
+            filename=$(ls -1 zephyr-sdk* toolchains/*);
             echo "Uploading to S3";
             #aws s3 cp ${filename} ${S3_PATH}/final/${filename};
             echo "SDK file name: ${filename}";
@@ -61,11 +61,13 @@ jobs:
               [ "$id" ] || { echo "Error: Failed to get release id for tag: $tag"; echo "$response" | awk 'length($0)<100' >&2; exit 1; }
 
               # Upload asset
-              echo "Uploading asset ${filename}... "
-              # Construct url
-              GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=\"$(basename $filename)\""
-              echo ${GH_ASSET}
-              curl --data-binary @"${filename}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET};
+              for f in $filename; do
+                echo "Uploading asset ${filename}... "
+                # Construct url
+                GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=\"$(basename $filename)\""
+                echo ${GH_ASSET}
+                curl --data-binary @"${filename}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET};
+              done
             elif [ -n "${PULL_REQUEST}" ]; then
               export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNAME}";
               sudo apt-get install -y makeself p7zip-full cpio tree;
