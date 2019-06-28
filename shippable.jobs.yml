@@ -185,7 +185,10 @@ jobs:
             - export QEMU_BIN_PATH=${ZEPHYR_SDK_INSTALL_DIR}/sysroots/x86_64-pokysdk-linux/usr/bin/
             - export QEMU_BIOS=${ZEPHYR_SDK_INSTALL_DIR}/sysroots/x86_64-pokysdk-linux/usr/share/qemu
             - export DTC=${ZEPHYR_SDK_INSTALL_DIR}/sysroots/x86_64-pokysdk-linux/usr/bin/dtc
-            - cd $(shipctl get_resource_state "main_repo_all_prep")
+            - cp -a $(shipctl get_resource_state "main_repo_all_prep") zephyr
+            - west init -l zephyr || true
+            - cd zephyr
+            - west update
             - source zephyr-env.sh;
             - ./scripts/sanitycheck --all --enable-slow --save-tests tests.csv
             - gzip tests.csv
