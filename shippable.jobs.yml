@@ -192,7 +192,7 @@ jobs:
             - cd zephyr
             - west update
             - source zephyr-env.sh;
-            - ./scripts/sanitycheck ${SC_OPT} --all --enable-slow --save-tests tests.csv
+            - ./scripts/sanitycheck --inline-logs ${SC_OPT} --all --enable-slow --save-tests tests.csv
             - gzip tests.csv
             - shipctl copy_file_to_state tests.csv.gz
 
