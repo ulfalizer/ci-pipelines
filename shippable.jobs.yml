@@ -164,7 +164,6 @@ jobs:
           script:
             - export SANITYCHECK_OPTIONS=" --inline-logs -N"
             - export SANITYCHECK_OPTIONS_RETRY=" --only-failed --outdir=out-2nd-pass"
-            - df -h
             - >
               if [ "$JOB_TRIGGERED_BY_NAME" = "daily-verify" ]; then
                 echo "Building configuration for sdk-ng: 0.10.1"
