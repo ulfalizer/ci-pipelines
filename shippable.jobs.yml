@@ -174,12 +174,10 @@ jobs:
                 echo "export GCCARMEMB_TOOLCHAIN_PATH=/opt/toolchain/arm-none-eabi" >> zephyrrc
                 echo "export ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb" >> zephyrrc
                 echo "export ZEPHYR_SDK_INSTALL_DIR=/opt/sdk/zephyr-sdk-0.10.1" >> zephyrrc
-                echo "export SC_OPT=\" --arch arm \"" >> zephyrrc
               else
                 echo "Building configuration for sdk-ng: 0.10.1"
                 echo "export ZEPHYR_SDK_INSTALL_DIR=/opt/sdk/zephyr-sdk-0.10.1" >> zephyrrc
                 echo "export ZEPHYR_TOOLCHAIN_VARIANT=zephyr" >> zephyrrc
-                echo "export SC_OPT=\" --arch arm \"" >> zephyrrc
               fi
             - shipctl copy_file_to_state zephyrrc
             - source zephyrrc
@@ -192,7 +190,7 @@ jobs:
             - cd zephyr
             - west update
             - source zephyr-env.sh;
-            - ./scripts/sanitycheck --inline-logs ${SC_OPT} --all --enable-slow --save-tests tests.csv
+            - ./scripts/sanitycheck --inline-logs --all --enable-slow --save-tests tests.csv
             - gzip tests.csv
             - shipctl copy_file_to_state tests.csv.gz
 
