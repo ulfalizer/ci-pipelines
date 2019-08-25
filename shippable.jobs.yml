@@ -158,7 +158,7 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.8.2
+              imageTag: v0.9
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
@@ -228,7 +228,7 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.8.2
+              imageTag: v0.9
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
@@ -251,7 +251,7 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.8.2
+              imageTag: v0.9
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
@@ -308,7 +308,7 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.8.2
+              imageTag: v0.9
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
@@ -372,7 +372,7 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.8.2
+              imageTag: v0.9
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
