@@ -158,7 +158,7 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.9
+              imageTag: v0.9.1
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
@@ -228,7 +228,7 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.9
+              imageTag: v0.9.1
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
@@ -251,7 +251,7 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.9
+              imageTag: v0.9.1
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
@@ -308,7 +308,7 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.9
+              imageTag: v0.9.1
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
@@ -372,11 +372,10 @@ jobs:
             container: true
             options:
               imageName: zephyrprojectrtos/ci
-              imageTag: v0.9
+              imageTag: v0.9.1
               pull: true
               options: "--privileged=true --tty --net=bridge"
           script:
-            - pip3 install pylint
             - cd $(shipctl get_resource_state "ci_tools_repo")
             - export CITOOLS=$(shipctl get_resource_state "ci_tools_repo")
             - git fetch origin pull/${CI_TOOLS_REPO_PULL_REQUEST}/head
