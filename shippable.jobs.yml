@@ -330,6 +330,10 @@ jobs:
             - ${CITOOLS}/scripts/what_changed.py -r ${MAIN_REPO_REPO_FULL_NAME} -p ${MAIN_REPO_PULL_REQUEST} --commits ${COMMIT_RANGE}
             - ${CITOOLS}/scripts/check_compliance.py -g -r ${MAIN_REPO_REPO_FULL_NAME} -s -S ${SHA}
             - echo "Building a Pull Request";
+            - echo "COMMIT_RANGE:" ${COMMIT_RANGE}
+            - echo "MAIN_REPO_PULL_REQUEST:" ${MAIN_REPO_PULL_REQUEST}
+            - echo "MAIN_REPO_REPO_FULL_NAME:" ${MAIN_REPO_REPO_FULL_NAME}
+            - echo "SHA:" ${SHA}
             - ${CITOOLS}/scripts/check_compliance.py -e Documentation --commits ${COMMIT_RANGE} -g -p ${MAIN_REPO_PULL_REQUEST} -r ${MAIN_REPO_REPO_FULL_NAME} -S ${SHA} -o first_pass.xml || true
             - cat /tmp/Kconfig.modules
             - west list --format={posixpath}
