@@ -214,8 +214,6 @@ jobs:
       - IN: zephyr-testing_ciRepo
       - IN: s3-token
       - IN: codecov_testing
-      - TASK:
-              - script: aws s3 ls
 
   - name: zephyr-daily-doc
     type: runSh
