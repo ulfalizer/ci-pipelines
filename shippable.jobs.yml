@@ -75,18 +75,6 @@ jobs:
               aws s3 cp ${filename} s3://builds.zephyrproject.org/sdk/${release}/
 
             elif [ -n "${PULL_REQUEST}" ]; then
-              export S3_PATH="s3://incoming.zephyrproject.org/sdk-ng/${SDKNG_CIREPO_VERSIONNAME}";
-              sudo apt-get install -y makeself p7zip-full cpio tree;
-              sudo pip install awscli;
-              cd $(shipctl get_resource_state "sdk_ng_repo");
-              ls -la;
-              mkdir -p scripts/toolchains;
-              aws s3 sync --quiet ${S3_PATH}/ scripts/toolchains;
-              chmod +x scripts/toolchains/*.sh;
-              pushd scripts/;
-              ./make_zephyr_sdk.sh;
-              filename=$(ls -1 zephyr-sdk*);
-              echo "SDK file name: ${filename}";
               echo "Uploading ${filename} to S3";
               aws s3 cp ${filename} s3://builds.zephyrproject.org/zephyrproject-rtos/sdk-ng/${PULL_REQUEST}/${filename};
             fi
