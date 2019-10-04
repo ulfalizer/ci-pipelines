@@ -40,10 +40,9 @@ jobs:
             pushd scripts/;
             tree -H '.' -L 1 --noreport --charset utf-8 toolchains > index.html
             ./make_zephyr_sdk.sh;
-            filename=$(ls -1 zephyr-sdk*);
+            sdk_filename=$(ls -1 zephyr-sdk*);
             echo "Uploading to S3";
-            #aws s3 cp ${filename} ${S3_PATH}/final/${filename};
-            echo "SDK file name: ${filename}";
+            echo "SDK file name: ${sdk_filename}";
             if [ "${IS_PRERELEASE}" = "true" -o "${IS_RELEASE}" = "true" ]; then
               # Copy artifacts to a safe location for later download
               aws s3 sync ${S3_PATH} s3://builds.zephyrproject.org/sdk/${release}/
@@ -67,16 +66,16 @@ jobs:
               [ "$id" ] || { echo "Error: Failed to get release id for tag: $tag"; echo "$response" | awk 'length($0)<100' >&2; exit 1; }
 
               # Upload asset
-              echo "Uploading asset ${filename}... "
+              echo "Uploading asset ${sdk_filename}... "
               # Construct url
-              GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=\"$(basename $filename)\""
+              GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=\"$(basename $sdk_filename)\""
               echo ${GH_ASSET}
-              curl --data-binary @"${filename}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET};
-              aws s3 cp ${filename} s3://builds.zephyrproject.org/sdk/${release}/
+              curl --data-binary @"${sdk_filename}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET};
+              aws s3 cp ${sdk_filename} s3://builds.zephyrproject.org/sdk/${release}/
 
             elif [ -n "${PULL_REQUEST}" ]; then
-              echo "Uploading ${filename} to S3";
-              aws s3 cp ${filename} s3://builds.zephyrproject.org/zephyrproject-rtos/sdk-ng/${PULL_REQUEST}/${filename};
+              echo "Uploading ${sdk_filename} to S3";
+              aws s3 cp ${sdk_filename} s3://builds.zephyrproject.org/zephyrproject-rtos/sdk-ng/${PULL_REQUEST}/${sdk_filename};
             fi
 
   - name: create_sdk
