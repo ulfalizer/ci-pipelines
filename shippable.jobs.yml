@@ -38,10 +38,11 @@ jobs:
             fi;
             release=$(cat VERSION)
             if [ "${IS_PRERELEASE}" = "true" -o "${IS_RELEASE}" = "true" ]; then
-              export S3_PUB_PATH="s3://builds.zephyrproject.org/sdk/${release}/
+              export S3_PUB_PATH="s3://builds.zephyrproject.org/sdk/${release}/"
             elif [ -n "${PULL_REQUEST}" ]; then
               export S3_PUB_PATH="s3://builds.zephyrproject.org/zephyrproject-rtos/sdk-ng/${PULL_REQUEST}/"
             fi
+            echo "S3_PUB_PATH: ${S3_PUB_PATH}"
             pushd scripts/;
             tree -H '.' -L 1 --noreport --charset utf-8 toolchains > index.html
             ./make_zephyr_sdk.sh;
