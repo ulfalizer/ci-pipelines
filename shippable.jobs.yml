@@ -80,6 +80,15 @@ jobs:
               GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=\"$(basename $sdk_filename)\""
               echo ${GH_ASSET}
               curl --data-binary @"${sdk_filename}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET};
+
+              for toolchain in $toolchain_files; do
+                # Upload asset
+                echo "Uploading asset ${toolchain}... "
+                # Construct url
+                GH_ASSET="https://uploads.github.com/repos/zephyrproject-rtos/sdk-ng/releases/$id/assets?name=\"$(basename $toolchain)\""
+                echo ${GH_ASSET}
+                curl --data-binary @"${toolchain}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET};
+              done
             fi
             if [ ${S3_PUB_PATH} ]; then
               echo "Uploading ${sdk_filename} to S3";
