@@ -50,7 +50,7 @@ jobs:
             echo "Uploading to S3";
             echo "SDK file name: ${sdk_filename}";
             echo "Toolchain file names: ${toolchain_files}";
-            if [ ${S3_PATH} ]; then
+            if [ ${S3_PUB_PATH} ]; then
               # Copy artifacts to a safe location for later download
               aws s3 sync ${S3_PATH} ${S3_PUB_PATH}
               aws s3 cp index.html ${S3_PUB_PATH}
@@ -81,7 +81,7 @@ jobs:
               echo ${GH_ASSET}
               curl --data-binary @"${sdk_filename}" -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/octet-stream" ${GH_ASSET};
             fi
-            if [ ${S3_PATH} ]; then
+            if [ ${S3_PUB_PATH} ]; then
               echo "Uploading ${sdk_filename} to S3";
               aws s3 cp ${sdk_filename} ${S3_PUB_PATH}
               for toolchain in $toolchain_files; do
