@@ -64,26 +64,6 @@ resources:
           buildOnPullRequest: true
           buildOnCommit: true
 
-    - name: ci_tools_repo
-      type: gitRepo
-      integration: github
-      pointer:
-          sourceName: zephyrproject-rtos/ci-tools
-          branch: master
-          buildOnPullRequest: true
-          buildOnCommit: true
-
-    - name: ci_tools_check_repo
-      type: gitRepo
-      integration: github
-      pointer:
-          sourceName: zephyrproject-rtos/ci-tools
-          branches:
-            only:
-              - master
-          buildOnPullRequest: false
-          buildOnCommit: true
-
     - name: main_repo_all_prep
       type: gitRepo
       integration: github
